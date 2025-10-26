@@ -22,7 +22,7 @@ function Cadastro() {
     console.log("Enviando dados:", formData);
 
     try{
-      const response = await fetch('http://localhost:5000/user', {
+      const response = await fetch('http://10.0.0.41:5000/user', {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(formData),
