@@ -1,0 +1,116 @@
+/* Centraliza o formulário na tela */
+.cadastro-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+/* Formulário */
+#cadastro_form1 {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#cadastro_form1 h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 25px;
+  text-align: left;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.row input {
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #9b2c2c;
+  background-color: #9b2c2c;
+  color: white;
+  font-size: 14px;
+}
+
+/* Nome do produto - MAIOR */
+.input-nome {
+  width: 65%;
+}
+
+/* Preço - MENOR */
+.input-preco {
+  width: 35%;
+}
+
+/* Quantidade - largura total */
+.row input[type="text"]:not(.input-nome):not(.input-preco) {
+  width: 100%;
+}
+
+/* Input file - largura total */
+.row input[type="file"] {
+  width: 100%;
+}
+
+.row input[type="text"]::placeholder,
+.row input[type="file"]::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.row input[type="file"]::file-selector-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #9b2c2c;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button:hover {
+  background-color: #7a2323;
+}
+
+.btn-voltar-form {
+  width: 100%;
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  background-color: #9b2c2c;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.btn-voltar-form:hover {
+  background-color: #7a2323;
+}
+
+.arquivo-selecionado {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin: 10px 0;
+}
