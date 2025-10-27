@@ -2,3 +2,89 @@
   text-align: center;
   margin-top: 100px;
 }
+
+.mercado-img {
+  width: 800px;
+  border-radius: 20px;
+  box-shadow: 0 8px 10px rgba(0,0,0,0.2);
+  margin: 40px;
+}
+
+.hr{
+  border: 2px solid #0000;
+  width: 50px;
+  margin: 20px auto;
+}
+
+.Cadastrar{
+  position: relative;
+  text-align: center;
+  padding: 20px;
+}
+
+.Cadastrar h1{
+  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 20px;
+}
+
+.images-container {
+  position: relative;
+  display: inline-block;
+}
+
+.bebida-img,
+.prateleira-img,
+.frutas-img {
+  width: 800px;
+  border-radius: 20px;
+  box-shadow: 0 8px 10px rgba(0,0,0,0.2);
+  margin: 40px;
+}
+
+/* Container para os botões lado a lado */
+.botoes-container {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Botão Cadastrar */
+.Cadastrar .btn-cadastrar {
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  border-radius: 20px;
+  font-size: 20px;
+  background: black;
+  padding: 10px 40px;
+  cursor: pointer;
+  border: none;
+  display: inline-block;
+  width: auto;
+  max-width: 300px;
+}
+
+.Cadastrar .btn-cadastrar:hover {
+  color: #a83737;
+}
+
+/* Botão Ver Produtos */
+.Cadastrar .btn-listar {
+  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  border-radius: 20px;
+  font-size: 20px;
+  background: black;
+  padding: 10px 40px;
+  cursor: pointer;
+  border: none;
+  display: inline-block;
+  width: auto;
+  max-width: 300px;
+}
+
+.Cadastrar .btn-listar:hover {
+  color: #a83737;
+}
