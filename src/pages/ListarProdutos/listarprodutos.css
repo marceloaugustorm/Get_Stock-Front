@@ -144,3 +144,114 @@
 .btn-deletar:hover {
   background-color: #dc2626;
 }
+
+/* Quando card for clicado */
+.produto-card.expandido {
+  border: 2px solid #2c5282;
+  transform: translateY(-8px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Container animado ao expandir */
+.produto-card {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Área de detalhes (ações) */
+.detalhes {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  animation: aparecer 0.3s ease forwards;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* Botões das ações */
+.detalhes button {
+  flex: 1 1 48%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+.detalhes button:nth-child(1) {
+  background-color: #3182ce;
+  color: white;
+}
+
+.detalhes button:nth-child(1):hover {
+  background-color: #2563eb;
+}
+
+.detalhes button:nth-child(2) {
+  background-color: #8b5cf6;
+  color: white;
+}
+
+.detalhes button:nth-child(2):hover {
+  background-color: #6d28d9;
+}
+
+.detalhes button:nth-child(3) {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.detalhes button:nth-child(3):hover {
+  background-color: #d97706;
+}
+
+.detalhes button:nth-child(4) {
+  background-color: #ef4444;
+  color: white;
+}
+
+.detalhes button:nth-child(4):hover {
+  background-color: #dc2626;
+}
+
+/* Cursor ao clicar */
+.produto-card:hover {
+  cursor: pointer;
+}
+
+/* Botão vender desabilitado */
+.btn-vender {
+  flex: 1 1 48%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  color: white;
+  background-color: #8b5cf6; /* cor normal */
+}
+
+.btn-vender:hover:not(:disabled) {
+  background-color: #6d28d9; /* hover só se não estiver desabilitado */
+}
+
+.btn-vender:disabled {
+  background-color: #94a3b8; /* cinza para desabilitado */
+  cursor: not-allowed;
+}
+

@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import "./listarprodutos.css";
 
 function ListarProdutos() {
     const [produtos, setProdutos] = useState([]);
-    const navigate = useNavigate();
+    const [produtoSelecionado, setProdutoSelecionado] = useState(null);
 
     useEffect(() => {
         buscarProdutos();
@@ -21,116 +20,108 @@ function ListarProdutos() {
         }
     };
 
-    const handleInativar = async (id) => {
-        try {
-            await api.patch(`/desativar/${id}`);
-            alert("Produto inativado com sucesso!");
-            buscarProdutos();
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao inativar produto!");
-        }
+    const handleCardClick = (id) => {
+        setProdutoSelecionado(produtoSelecionado === id ? null : id);
     };
 
-    const handleAtivar = async (id) => {
-        try {
-            await api.patch(`/ativar/${id}`);
-            alert("Produto ativado com sucesso!");
-            buscarProdutos();
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao ativar produto!");
-        }
+    const handleVender = async (id) => {
+    const quantidade = Number(prompt("Quantidade a vender:"));
+
+    if (!quantidade || quantidade <= 0) return;
+
+    try {
+        await api.patch(`/produto/vender/${id}`, {
+            quantidade_venda: quantidade
+        });
+
+        alert("Produto vendido com sucesso!");
+        buscarProdutos();
+    } catch (error) {
+        alert(error.response?.data?.erro || "Erro ao vender produto!");
+    }
+};
+
+    const handleEditar = async (id) => {
+        const nome = prompt("Novo nome:");
+        const preco = parseFloat(prompt("Novo preço:"));
+        const quantidade = parseInt(prompt("Nova quantidade:"));
+
+        if (!nome || !preco || !quantidade) return;
+
+        await api.put(`/produto/${id}`, { nome, preco, quantidade });
+        alert("Produto atualizado!");
+        buscarProdutos();
+    };
+
+    const handleStatus = async (id, status) => {
+        await api.patch(`/${status}/${id}`);
+        buscarProdutos();
     };
 
     const handleDeletar = async (id) => {
-        if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-            try {
-                await api.delete(`/produto/${id}`);
-                alert("Produto excluído com sucesso!");
-                buscarProdutos();
-            } catch (error) {
-                console.error(error);
-                alert("Erro ao excluir produto!");
-            }
+        if (window.confirm("Tem certeza que deseja excluir?")) {
+            await api.delete(`/produto/${id}`);
+            alert("Produto removido!");
+            buscarProdutos();
         }
     };
 
-    const voltarHome = () => {
-        navigate('/');
-    };
-
-    // Como está usando proxy, a URL é direta
-    const API_BASE_URL = "http://10.0.0.41:5000";
-
     return (
         <div className="listar-container">
-            <div className="header-listar">
-                <button className="btn-voltar" onClick={voltarHome}>
-                    ← Voltar
-                </button>
-                <h2>Produtos Cadastrados</h2>
-            </div>
+            <h2>Produtos Cadastrados</h2>
 
             {produtos.length === 0 ? (
-                <p className="sem-produtos">Nenhum produto cadastrado ainda.</p>
+                <p>Nenhum produto cadastrado ainda.</p>
             ) : (
                 <div className="produtos-grid">
                     {produtos.map((p) => (
-                        <div key={p.id} className="produto-card">
-                            {p.imagem ? (
-                                <img
-                                    src={`${API_BASE_URL}/${p.imagem}`}
-                                    alt={p.nome}
-                                    className="produto-img"
-                                    onError={(e) => {
-                                        e.target.src = 'https://via.placeholder.com/150?text=Sem+Imagem';
-                                    }}
-                                />
-                            ) : (
-                                <div className="produto-img-placeholder">Sem imagem</div>
-                            )}
+                        <div
+                            key={p.id}
+                            onClick={() => handleCardClick(p.id)}
+                            className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
+                        >
+                            <img
+                                src={`http://10.0.0.41:5000/${p.imagem}`}
+                                alt={p.nome}
+                                className="produto-img"
+                                onError={(e) => {
+                                    e.target.src = 'https://via.placeholder.com/150?text=Sem+Imagem';
+                                }}
+                            />
 
                             <h3>{p.nome}</h3>
                             <p className="preco">R$ {parseFloat(p.preco).toFixed(2)}</p>
-                            <p>Quantidade: {p.quantidade}</p>
+                            <p>Qtd: {p.quantidade}</p>
 
-                            {/* STATUS DO PRODUTO - JÁ ESTÁ AQUI! */}
                             <p>
                                 Status:{" "}
-                                <span
-                                    style={{
-                                        color: p.status ? "green" : "red",
-                                        fontWeight: "bold",
-                                    }}
-                                >
+                                <span style={{ color: p.status ? "green" : "red", fontWeight: "bold" }}>
                                     {p.status ? "Ativo" : "Inativo"}
                                 </span>
                             </p>
 
-                            <div className="acoes-produto">
-                                {p.status ? (
+                            {produtoSelecionado === p.id && (
+                                <div className="detalhes">
+                                    <button onClick={() => handleEditar(p.id)}>Editar</button>
                                     <button
-                                        className="btn-inativar"
-                                        onClick={() => handleInativar(p.id)}
-                                    >
-                                        Inativar
+                                        className="btn-vender"
+                                        onClick={() => handleVender(p.id)}
+                                        disabled={p.quantidade <= 0}
+                                        title={p.quantidade <= 0 ? "Produto sem estoque" : "Vender"}
+                                        >
+                                        {p.quantidade <= 0 ? "Sem estoque" : "Vender"}
                                     </button>
-                                ) : (
-                                    <button
-                                        className="btn-ativar"
-                                        onClick={() => handleAtivar(p.id)}
-                                    >
-                                        Ativar
-                                    </button>
-                                )}
-                                <button
-                                    className="btn-deletar"
-                                    onClick={() => handleDeletar(p.id)}
-                                >
-                                    Excluir
-                                </button>
-                            </div>
+                                    
+
+                                    {p.status ? (
+                                        <button onClick={() => handleStatus(p.id, "desativar")}>Inativar</button>
+                                    ) : (
+                                        <button onClick={() => handleStatus(p.id, "ativar")}>Ativar</button>
+                                    )}
+
+                                    <button onClick={() => handleDeletar(p.id)}>Excluir</button>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
