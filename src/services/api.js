@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://192.168.15.8:5000", // ajuste conforme seu backend
+  baseURL: "https://projeto-get-stock.onrender.com", // ajuste conforme seu backend
 });
 
 // Intercepta TODAS as requisições e adiciona o token JWT

@@ -144,7 +144,7 @@ function ListarProdutos() {
         </div>
       )}
 
-    
+      
       {dashboard ? (
         <div className="dashboard">
           <p>Total de produtos: {dashboard.total_produtos}</p>
