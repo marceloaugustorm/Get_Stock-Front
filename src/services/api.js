@@ -1,10 +1,17 @@
 // src/services/api.js
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-    baseURL: '', // Vazio - o proxy vai redirecionar automaticamente
+  baseURL: "http://192.168.15.8:5000", // ajuste conforme seu backend
 });
 
-console.log('✅ API configurada para usar proxy');
+// Intercepta TODAS as requisições e adiciona o token JWT
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default api;

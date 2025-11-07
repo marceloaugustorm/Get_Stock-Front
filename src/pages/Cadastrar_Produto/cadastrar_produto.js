@@ -24,31 +24,53 @@ function CadastrarProduto() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Criar FormData para enviar arquivo
+        // Pega o token salvo
+        const token = localStorage.getItem("token");
+        console.log("🔐 Token recuperado:", token);
+
+        // Cria o FormData
         const data = new FormData();
         data.append("nome", formData.nome);
         data.append("preco", formData.preco);
         data.append("quantidade", formData.quantidade);
-        // data.append("status", "True");
+        data.append("status", formData.status ? "True" : "False");
 
         if (imagem) {
             data.append("imagem", imagem);
+            console.log("🖼️ Imagem anexada:", imagem.name);
+        } else {
+            console.log("⚠️ Nenhuma imagem foi selecionada");
         }
 
+        console.log("📦 Dados sendo enviados:", {
+            nome: formData.nome,
+            preco: formData.preco,
+            quantidade: formData.quantidade,
+            status: formData.status,
+        });
+
         try {
-            await api.post("/produto", data, {
+            const response = await api.post("/produto", data, {
                 headers: {
                     "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`,
                 },
             });
+
+            console.log("✅ Resposta da API:", response.data);
             alert("Produto cadastrado com sucesso!");
+
             setFormData({ nome: "", preco: "", quantidade: "", status: true });
             setImagem(null);
-            // Limpar o input file
             document.querySelector('input[type="file"]').value = '';
         } catch (error) {
-            console.error(error);
-            alert("Erro ao cadastrar produto: " + (error.response?.data?.erro || error.message));
+            console.error("❌ Erro ao cadastrar produto:", error);
+            if (error.response) {
+                console.error("📩 Detalhes do erro:", error.response.data);
+                alert("Erro ao cadastrar produto: " + (error.response.data.erro || "Erro desconhecido"));
+            } else {
+                alert("Erro ao conectar à API.");
+            }
         }
     };
 
