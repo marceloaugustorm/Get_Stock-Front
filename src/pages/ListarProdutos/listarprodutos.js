@@ -103,7 +103,7 @@ function ListarProdutos() {
               className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
             >
               <img
-                src={`http://192.168.15.8:5000/${p.imagem}`}
+                src={p.imagem || "https://via.placeholder.com/150?text=Sem+Imagem"}
                 alt={p.nome}
                 className="produto-img"
                 onError={(e) => {
@@ -144,7 +144,6 @@ function ListarProdutos() {
         </div>
       )}
 
-      
       {dashboard ? (
         <div className="dashboard">
           <p>Total de produtos: {dashboard.total_produtos}</p>

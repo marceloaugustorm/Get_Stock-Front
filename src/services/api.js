@@ -5,7 +5,7 @@ const api = axios.create({
   baseURL: "https://projeto-get-stock.onrender.com", // ajuste conforme seu backend
 });
 
-// Intercepta TODAS as requisições e adiciona o token JWT
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
