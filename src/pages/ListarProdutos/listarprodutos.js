@@ -14,33 +14,23 @@ function ListarProdutos() {
     if (!isAuthenticated()) {
       navigate("/login");
     } else {
-      atualizarTela();
+      atualizarDados();
     }
   }, []);
 
-  // Busca produtos e dashboard do backend
-  const atualizarTela = async () => {
-    await buscarProdutos();
-    await buscarDashboard();
-  };
-
-  const buscarProdutos = async () => {
+  // Função única para pegar produtos e dashboard do backend
+  const atualizarDados = async () => {
     try {
-      const response = await api.get("/produto");
-      setProdutos(response.data);
+      const [produtosResp, dashboardResp] = await Promise.all([
+        api.get("/produto"),
+        api.get("/produto/dashboard")
+      ]);
+
+      setProdutos(produtosResp.data);
+      setDashboard(dashboardResp.data);
     } catch (error) {
       console.error(error);
-      alert("Erro ao carregar produtos!");
-    }
-  };
-
-  const buscarDashboard = async () => {
-    try {
-      const response = await api.get("/produto/dashboard");
-      setDashboard(response.data);
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao carregar dashboard!");
+      alert("Erro ao carregar dados!");
     }
   };
 
@@ -54,9 +44,7 @@ function ListarProdutos() {
 
     try {
       await api.patch(`/produto/${id}/vender`, { quantidade_venda: quantidade });
-
-      // ⚡ Recarrega do backend para garantir persistência
-      await atualizarTela();
+      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
       setProdutoSelecionado(null);
       alert("Produto vendido com sucesso!");
     } catch (error) {
@@ -76,9 +64,7 @@ function ListarProdutos() {
 
     try {
       await api.put(`/produto/${id}`, { nome, preco, quantidade });
-
-      // ⚡ Recarrega do backend
-      await atualizarTela();
+      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
       setProdutoSelecionado(null);
       alert("Produto atualizado!");
     } catch (error) {
@@ -89,9 +75,7 @@ function ListarProdutos() {
   const handleStatus = async (id, status) => {
     try {
       await api.patch(`/produto/${status}/${id}`);
-
-      // ⚡ Recarrega do backend
-      await atualizarTela();
+      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
       setProdutoSelecionado(null);
     } catch (error) {
       alert(error.response?.data?.erro || "Erro ao alterar status!");
@@ -103,9 +87,7 @@ function ListarProdutos() {
 
     try {
       await api.delete(`/produto/${id}`);
-
-      // ⚡ Recarrega do backend
-      await atualizarTela();
+      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
       setProdutoSelecionado(null);
       alert("Produto removido!");
     } catch (error) {
@@ -128,12 +110,9 @@ function ListarProdutos() {
               className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
             >
               <img
-                src={p.imagem}
+                src={p.imagem || "https://via.placeholder.com/150?text=Sem+Imagem"}
                 alt={p.nome}
                 className="produto-img"
-                onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/150?text=Sem+Imagem";
-                }}
               />
               <h3>{p.nome}</h3>
               <p className="preco">R$ {parseFloat(p.preco).toFixed(2)}</p>
