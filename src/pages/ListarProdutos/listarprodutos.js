@@ -15,7 +15,6 @@ function ListarProdutos() {
   const buscarProdutos = async () => {
     try {
       const response = await api.get("/produto");
-      // Certifique-se de que response.data[i].imagem é uma URL HTTPS válida
       setProdutos(response.data);
     } catch (error) {
       console.error(error);
@@ -104,11 +103,11 @@ function ListarProdutos() {
               className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
             >
               <img
-                src={p.imagem?.startsWith("http") ? p.imagem : "/sem-imagem.png"}
+                src={`http://192.168.15.8:5000/${p.imagem}`}
                 alt={p.nome}
                 className="produto-img"
                 onError={(e) => {
-                  e.target.src = "/sem-imagem.png"; // fallback local
+                  e.target.src = "https://via.placeholder.com/150?text=Sem+Imagem";
                 }}
               />
               <h3>{p.nome}</h3>
@@ -145,6 +144,7 @@ function ListarProdutos() {
         </div>
       )}
 
+      
       {dashboard ? (
         <div className="dashboard">
           <p>Total de produtos: {dashboard.total_produtos}</p>
@@ -153,7 +153,7 @@ function ListarProdutos() {
           <p>Faturamento total: R$ {dashboard.faturamento_total.toFixed(2)}</p>
           <p>Produto mais vendido: {dashboard.produto_mais_vendido || "Nenhum"}</p>
           <div className="graficos">
-            {dashboard.grafico_status && <img src={dashboard.grafico_status} alt="Status dos Produtos" />}
+            <img src={dashboard.grafico_status} alt="Status dos Produtos" />
             {dashboard.grafico_vendas && <img src={dashboard.grafico_vendas} alt="Ranking de Vendas" />}
           </div>
         </div>
