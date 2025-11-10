@@ -103,11 +103,11 @@ function ListarProdutos() {
               className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
             >
               <img
-                src={p.imagem || "https://via.placeholder.com/150?text=Sem+Imagem"}
+                src={p.imagem || "/sem-imagem.png"} // fallback se não houver imagem
                 alt={p.nome}
                 className="produto-img"
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/150?text=Sem+Imagem";
+                  e.target.src = "/sem-imagem.png";
                 }}
               />
               <h3>{p.nome}</h3>
