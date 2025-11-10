@@ -8,29 +8,35 @@ function ListarProdutos() {
   const [produtos, setProdutos] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [dashboard, setDashboard] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
     } else {
-      atualizarDados();
+      buscarProdutos();
+      buscarDashboard();
     }
   }, []);
 
-  // Função única para pegar produtos e dashboard do backend
-  const atualizarDados = async () => {
+  const buscarProdutos = async () => {
     try {
-      const [produtosResp, dashboardResp] = await Promise.all([
-        api.get("/produto"),
-        api.get("/produto/dashboard")
-      ]);
-
-      setProdutos(produtosResp.data);
-      setDashboard(dashboardResp.data);
+      const response = await api.get("/produto");
+      setProdutos(response.data);
     } catch (error) {
       console.error(error);
-      alert("Erro ao carregar dados!");
+      alert("Erro ao carregar produtos!");
+    }
+  };
+
+  const buscarDashboard = async () => {
+    try {
+      const response = await api.get("/produto/dashboard");
+      setDashboard(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao carregar dashboard!");
     }
   };
 
@@ -44,7 +50,15 @@ function ListarProdutos() {
 
     try {
       await api.patch(`/produto/${id}/vender`, { quantidade_venda: quantidade });
-      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
+
+      // Atualiza só o produto vendido
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, quantidade: p.quantidade - quantidade } : p
+        )
+      );
+
+      buscarDashboard();
       setProdutoSelecionado(null);
       alert("Produto vendido com sucesso!");
     } catch (error) {
@@ -64,7 +78,15 @@ function ListarProdutos() {
 
     try {
       await api.put(`/produto/${id}`, { nome, preco, quantidade });
-      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
+
+      // Atualiza só o produto alterado
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, nome, preco, quantidade } : p
+        )
+      );
+
+      buscarDashboard();
       setProdutoSelecionado(null);
       alert("Produto atualizado!");
     } catch (error) {
@@ -75,7 +97,15 @@ function ListarProdutos() {
   const handleStatus = async (id, status) => {
     try {
       await api.patch(`/produto/${status}/${id}`);
-      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
+
+      // Atualiza só o status do produto
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, status: status === "ativar" } : p
+        )
+      );
+
+      buscarDashboard();
       setProdutoSelecionado(null);
     } catch (error) {
       alert(error.response?.data?.erro || "Erro ao alterar status!");
@@ -87,7 +117,11 @@ function ListarProdutos() {
 
     try {
       await api.delete(`/produto/${id}`);
-      await atualizarDados(); // ⚡ Busca os dados atualizados do backend
+
+      // Remove produto do estado
+      setProdutos((prev) => prev.filter((p) => p.id !== id));
+
+      buscarDashboard();
       setProdutoSelecionado(null);
       alert("Produto removido!");
     } catch (error) {
@@ -110,9 +144,12 @@ function ListarProdutos() {
               className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
             >
               <img
-                src={p.imagem || "https://via.placeholder.com/150?text=Sem+Imagem"}
+                src={p.imagem}
                 alt={p.nome}
                 className="produto-img"
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/150?text=Sem+Imagem";
+                }}
               />
               <h3>{p.nome}</h3>
               <p className="preco">R$ {parseFloat(p.preco).toFixed(2)}</p>
