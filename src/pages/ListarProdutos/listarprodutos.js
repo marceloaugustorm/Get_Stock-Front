@@ -8,7 +8,6 @@ function ListarProdutos() {
   const [produtos, setProdutos] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [dashboard, setDashboard] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,10 +47,16 @@ function ListarProdutos() {
     const quantidade = Number(prompt("Quantidade a vender:"));
     if (!quantidade || quantidade <= 0) return;
 
+    const produto = produtos.find((p) => p.id === id);
+    if (quantidade > produto.quantidade) {
+      alert("Estoque insuficiente!");
+      return;
+    }
+
     try {
       await api.patch(`/produto/${id}/vender`, { quantidade_venda: quantidade });
 
-      // Atualiza só o produto vendido
+      // Atualiza só o produto vendido localmente
       setProdutos((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, quantidade: p.quantidade - quantidade } : p
@@ -79,7 +84,7 @@ function ListarProdutos() {
     try {
       await api.put(`/produto/${id}`, { nome, preco, quantidade });
 
-      // Atualiza só o produto alterado
+      // Atualiza só o produto alterado localmente
       setProdutos((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, nome, preco, quantidade } : p
@@ -98,7 +103,7 @@ function ListarProdutos() {
     try {
       await api.patch(`/produto/${status}/${id}`);
 
-      // Atualiza só o status do produto
+      // Atualiza só o status do produto localmente
       setProdutos((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, status: status === "ativar" } : p
