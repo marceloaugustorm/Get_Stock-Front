@@ -103,7 +103,7 @@ function ListarProdutos() {
               className={`produto-card ${produtoSelecionado === p.id ? "expandido" : ""}`}
             >
               <img
-                src={`http://192.168.15.8:5000/${p.imagem}`}
+                src={p.imagem}
                 alt={p.nome}
                 className="produto-img"
                 onError={(e) => {
