@@ -15,6 +15,8 @@ function ListarProdutos() {
   const buscarProdutos = async () => {
     try {
       const response = await api.get("/produto");
+      console.log('Produtos recebidos:', response.data);
+      console.log('Primeira imagem:', response.data[0]?.imagem);
       setProdutos(response.data);
     } catch (error) {
       console.error(error);
@@ -107,6 +109,7 @@ function ListarProdutos() {
                 alt={p.nome}
                 className="produto-img"
                 onError={(e) => {
+                  console.log('Erro ao carregar imagem:', p.imagem);
                   e.target.src = "https://via.placeholder.com/150?text=Sem+Imagem";
                 }}
               />
