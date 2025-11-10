@@ -14,10 +14,15 @@ function ListarProdutos() {
     if (!isAuthenticated()) {
       navigate("/login");
     } else {
-      buscarProdutos();
-      buscarDashboard();
+      atualizarTela();
     }
   }, []);
+
+  // Busca produtos e dashboard do backend
+  const atualizarTela = async () => {
+    await buscarProdutos();
+    await buscarDashboard();
+  };
 
   const buscarProdutos = async () => {
     try {
@@ -47,23 +52,11 @@ function ListarProdutos() {
     const quantidade = Number(prompt("Quantidade a vender:"));
     if (!quantidade || quantidade <= 0) return;
 
-    const produto = produtos.find((p) => p.id === id);
-    if (quantidade > produto.quantidade) {
-      alert("Estoque insuficiente!");
-      return;
-    }
-
     try {
       await api.patch(`/produto/${id}/vender`, { quantidade_venda: quantidade });
 
-      // Atualiza só o produto vendido localmente
-      setProdutos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, quantidade: p.quantidade - quantidade } : p
-        )
-      );
-
-      buscarDashboard();
+      // ⚡ Recarrega do backend para garantir persistência
+      await atualizarTela();
       setProdutoSelecionado(null);
       alert("Produto vendido com sucesso!");
     } catch (error) {
@@ -84,14 +77,8 @@ function ListarProdutos() {
     try {
       await api.put(`/produto/${id}`, { nome, preco, quantidade });
 
-      // Atualiza só o produto alterado localmente
-      setProdutos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, nome, preco, quantidade } : p
-        )
-      );
-
-      buscarDashboard();
+      // ⚡ Recarrega do backend
+      await atualizarTela();
       setProdutoSelecionado(null);
       alert("Produto atualizado!");
     } catch (error) {
@@ -103,14 +90,8 @@ function ListarProdutos() {
     try {
       await api.patch(`/produto/${status}/${id}`);
 
-      // Atualiza só o status do produto localmente
-      setProdutos((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, status: status === "ativar" } : p
-        )
-      );
-
-      buscarDashboard();
+      // ⚡ Recarrega do backend
+      await atualizarTela();
       setProdutoSelecionado(null);
     } catch (error) {
       alert(error.response?.data?.erro || "Erro ao alterar status!");
@@ -123,10 +104,8 @@ function ListarProdutos() {
     try {
       await api.delete(`/produto/${id}`);
 
-      // Remove produto do estado
-      setProdutos((prev) => prev.filter((p) => p.id !== id));
-
-      buscarDashboard();
+      // ⚡ Recarrega do backend
+      await atualizarTela();
       setProdutoSelecionado(null);
       alert("Produto removido!");
     } catch (error) {
