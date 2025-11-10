@@ -15,8 +15,6 @@ function ListarProdutos() {
   const buscarProdutos = async () => {
     try {
       const response = await api.get("/produto");
-      console.log('Produtos recebidos:', response.data);
-      console.log('Primeira imagem:', response.data[0]?.imagem);
       setProdutos(response.data);
     } catch (error) {
       console.error(error);
@@ -45,8 +43,16 @@ function ListarProdutos() {
     try {
       await api.patch(`/produto/${id}/vender`, { quantidade_venda: quantidade });
       alert("Produto vendido com sucesso!");
-      buscarProdutos();
+
+      // Atualiza só o produto vendido
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, quantidade: p.quantidade - quantidade } : p
+        )
+      );
+
       buscarDashboard();
+      setProdutoSelecionado(null);
     } catch (error) {
       alert(error.response?.data?.erro || "Erro ao vender produto!");
     }
@@ -56,13 +62,25 @@ function ListarProdutos() {
     const nome = prompt("Novo nome:");
     const preco = parseFloat(prompt("Novo preço:"));
     const quantidade = parseInt(prompt("Nova quantidade:"));
-    if (!nome || !preco || !quantidade) return;
+
+    if (!nome || isNaN(preco) || isNaN(quantidade)) {
+      alert("Valores inválidos!");
+      return;
+    }
 
     try {
       await api.put(`/produto/${id}`, { nome, preco, quantidade });
       alert("Produto atualizado!");
-      buscarProdutos();
+
+      // Atualiza apenas o produto alterado
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, nome, preco, quantidade } : p
+        )
+      );
+
       buscarDashboard();
+      setProdutoSelecionado(null);
     } catch (error) {
       alert(error.response?.data?.erro || "Erro ao editar produto!");
     }
@@ -71,29 +89,42 @@ function ListarProdutos() {
   const handleStatus = async (id, status) => {
     try {
       await api.patch(`/produto/${status}/${id}`);
-      buscarProdutos();
+
+      // Atualiza só o status do produto
+      setProdutos((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, status: status === "ativar" } : p
+        )
+      );
+
       buscarDashboard();
+      setProdutoSelecionado(null);
     } catch (error) {
       alert(error.response?.data?.erro || "Erro ao alterar status!");
     }
   };
 
   const handleDeletar = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir?")) {
-      try {
-        await api.delete(`/produto/${id}`);
-        alert("Produto removido!");
-        buscarProdutos();
-        buscarDashboard();
-      } catch (error) {
-        alert(error.response?.data?.erro || "Erro ao excluir produto!");
-      }
+    if (!window.confirm("Tem certeza que deseja excluir?")) return;
+
+    try {
+      await api.delete(`/produto/${id}`);
+      alert("Produto removido!");
+
+      // Remove produto do estado
+      setProdutos((prev) => prev.filter((p) => p.id !== id));
+
+      buscarDashboard();
+      setProdutoSelecionado(null);
+    } catch (error) {
+      alert(error.response?.data?.erro || "Erro ao excluir produto!");
     }
   };
 
   return (
     <div className="listar-container">
       <h2>Produtos Cadastrados</h2>
+
       {produtos.length === 0 ? (
         <p>Nenhum produto cadastrado ainda.</p>
       ) : (
@@ -109,7 +140,6 @@ function ListarProdutos() {
                 alt={p.nome}
                 className="produto-img"
                 onError={(e) => {
-                  console.log('Erro ao carregar imagem:', p.imagem);
                   e.target.src = "https://via.placeholder.com/150?text=Sem+Imagem";
                 }}
               />
@@ -147,7 +177,6 @@ function ListarProdutos() {
         </div>
       )}
 
-      
       {dashboard ? (
         <div className="dashboard">
           <p>Total de produtos: {dashboard.total_produtos}</p>
